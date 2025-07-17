@@ -24,7 +24,7 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return
-  if (message.content !== "Qwe") return
+  if (message.content !== "Турнир") return
 
   const RegisterButton = new ButtonBuilder()
     .setCustomId("register")
@@ -74,6 +74,10 @@ client.on("messageCreate", async (message) => {
   })
 })
 
-client.login(
-  "MTM5NDczOTQwMDAwNDQ3Mjk5Mw.Gc1S_S.rVpiPOkLQi_DXR0j84JWWBD_cEU8enLIUbrHVg"
-)
+client.login(process.env.TOKEN)
+
+// {
+//   "token": "MTM5NDczOTQwMDAwNDQ3Mjk5Mw.Gc1S_S.rVpiPOkLQi_DXR0j84JWWBD_cEU8enLIUbrHVg",
+//   "guildId": "927609290427105320",
+//   "clientid": "1394739400004472993"
+// }

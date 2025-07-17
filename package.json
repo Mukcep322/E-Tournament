@@ -1,0 +1,31 @@
+{
+  "name": "e-tourn",
+  "version": "1.0.0",
+  "description": "Discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js",
+    "deploy": "nodemon deploy-commands.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mukcep322/E-Tournament.git"
+  },
+  "author": "Mukcep",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mukcep322/E-Tournament/issues"
+  },
+  "homepage": "https://github.com/Mukcep322/E-Tournament#readme",
+  "dependencies": {
+    "@discordjs/rest": "^2.5.1",
+    "discord-api-types": "^0.38.16",
+    "discord.js": "^14.21.0",
+    "dotenv": "^17.2.0",
+    "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "eslint": "^9.31.0"
+  }
+}

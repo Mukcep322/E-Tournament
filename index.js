@@ -24,7 +24,7 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return
-  if (message.content !== "Турнир") return
+  if (message.content !== "qwe") return
 
   const RegisterButton = new ButtonBuilder()
     .setCustomId("register")
@@ -46,20 +46,49 @@ client.on("messageCreate", async (message) => {
     components: [buttonRow]
   })
 
-  const filter = (i) => i.user.id === message.author.id
-
   const collector = reply.createMessageComponentCollector({
     componentType: ComponentType.Button,
-    filter,
     time: 100_000
   })
 
+  const users = []
+
+  // const filter = (i) => i.user.id === message.author.id
+
   collector.on("collect", (interaction) => {
+    // Регистрация
     if (interaction.customId === "register") {
-      interaction.reply("Вы успешно зарегистрировались на турнир!")
+      // Пользователь уже зарегистрирован
+      if (users.some((user) => user.id === interaction.user.id)) {
+        return interaction.reply(
+          `${interaction.user}, Вы уже были зарегистрированы!`
+        )
+      } else {
+        interaction.reply(
+          `${interaction.user}, Вы успешно зарегистрировались на турнир!`
+        )
+        users.push(interaction.user)
+        console.log(users)
+      }
     }
+    // Отмена регистрации
     if (interaction.customId === "cancel") {
-      interaction.reply("Вы стали капитаном!")
+      // Sucess
+      if (users.some((user) => user.id === interaction.user.id)) {
+        interaction.reply(`${interaction.user}, Вы отменили регистрацию!`)
+
+        const index = users.findIndex(
+          (users) => users.id === interaction.user.id
+        )
+
+        if (index !== -1) {
+          users.splice(index, 1)
+        }
+      } else {
+        return interaction.reply(
+          `${interaction.user}, Вы не были зарегистрированы!`
+        )
+      }
     }
   })
 
@@ -75,9 +104,3 @@ client.on("messageCreate", async (message) => {
 })
 
 client.login(process.env.TOKEN)
-
-// {
-//   "token": "MTM5NDczOTQwMDAwNDQ3Mjk5Mw.Gc1S_S.rVpiPOkLQi_DXR0j84JWWBD_cEU8enLIUbrHVg",
-//   "guildId": "927609290427105320",
-//   "clientid": "1394739400004472993"
-// }

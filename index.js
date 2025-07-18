@@ -119,7 +119,8 @@ client.on("messageCreate", async (message) => {
 // драфт капитанов
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return
-  if (message.content !== commands.commandSelectCapitns) return
+  if (message.content !== commands.prefix + commands.commandSelectCapitns)
+    return
 
   // Success
   if (users.length < 10) {
@@ -176,7 +177,7 @@ client.on("messageCreate", async (message) => {
 })
 
 client.on("messageCreate", async (message) => {
-  if (message.content === commands.commandDraft) {
+  if (message.content === commands.prefix + commands.commandDraft) {
     const members = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
     const shuffled = [...members].sort(() => Math.random() - 0.5)
 

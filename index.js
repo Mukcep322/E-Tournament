@@ -2,6 +2,14 @@ require("dotenv/config")
 
 const commands = require("./config.json")
 
+const users = []
+
+const command1 = []
+const command2 = []
+
+let Capitan1 = {}
+let Capitan2 = {}
+
 const {
   Client,
   IntentsBitField,
@@ -9,6 +17,7 @@ const {
   ButtonStyle,
   ActionRowBuilder,
   ComponentType,
+  EmbedBuilder,
   PresenceUpdateStatus
 } = require("discord.js")
 
@@ -27,7 +36,6 @@ client.on("ready", () => {
   client.user.setStatus(PresenceUpdateStatus.DoNotDisturb)
 })
 
-const users = []
 // Команда открытия регистрации
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return
@@ -57,6 +65,7 @@ client.on("messageCreate", async (message) => {
     componentType: ComponentType.Button
   })
 
+  // Регистрация
   collector.on("collect", async (interaction) => {
     // Регистрация
     if (interaction.customId === "register") {
@@ -105,6 +114,7 @@ client.on("messageCreate", async (message) => {
     }
   })
 
+  // Если регистрация закончилась - истек таймер
   collector.on("end", () => {
     RegisterButton.setDisabled(true)
     CancelButton.setDisabled(true)
@@ -139,7 +149,12 @@ client.on("messageCreate", async (message) => {
       .setLabel("Капитан 2")
       .setStyle(ButtonStyle.Danger)
 
-    const CapRow = new ActionRowBuilder().addComponents(Cap1, Cap2)
+    const Random = new ButtonBuilder()
+      .setCustomId("random")
+      .setLabel("Случайные команды")
+      .setStyle(ButtonStyle.Primary)
+
+    const CapRow = new ActionRowBuilder().addComponents(Cap1, Cap2, Random)
 
     const reply = await message.reply({
       content: `0_0 \n @everyone, Кто капитаны?`,
@@ -151,41 +166,75 @@ client.on("messageCreate", async (message) => {
     })
 
     // Action with btns
-    collector.on("collect", (interaction) => {
+    collector.on("collect", async (interaction) => {
       // Cap 1
       if (interaction.customId === "cap1") {
         // Пользователь зарегистрирован?
         if (users.some((user) => user.id === interaction.user.id)) {
-          //
+          Capitan1 = interaction.user
+          Cap1.setDisabled(true)
+          await reply.edit({
+            content: `0_0 \n @everyone, Кто капитаны? Капитан 1 - ${Capitan1}, Капитан 2 -${Capitan2}`
+          })
         } else {
-          interaction.reply(`${interaction.user}, Вы не были зарегистрированы!`)
+          await interaction.reply(
+            `${interaction.user}, Вы не были зарегистрированы!`
+          )
         }
       }
       // Cap 2
       if (interaction.customId === "cap2") {
-        Capitan2 = interaction.user
-        console.log(Capitan2.username)
+        // Пользователь зарегистрирован?
+        if (users.some((user) => user.id === interaction.user.id)) {
+          Capitan2 = interaction.user
+          Cap1.setDisabled(true)
+          await reply.edit({
+            content: `0_0 \n @everyone, Кто капитаны? Капитан 1 - ${Capitan1}, Капитан 2 -${Capitan2}`
+          })
+        } else {
+          await interaction.reply(
+            `${interaction.user}, Вы не были зарегистрированы!`
+          )
+        }
+      }
+      // Random
+      if (interaction.customId === "random") {
+        const shuffled = [...users].sort(() => 0.5 - Math.random())
+        shuffled.forEach((user, index) => {
+          index % 2 === 0 ? command1.push(user) : command2.push(user)
+        })
+        await interaction.reply("0_0 \n @everyone, Команды распределены!")
       }
     })
   }
-
   // Error
   else {
     message.reply("Неверное количество участников!")
     return
   }
 })
+// Случайное распределение
 
+// Show commands
 client.on("messageCreate", async (message) => {
   if (message.content === commands.prefix + commands.commandDraft) {
-    const members = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-    const shuffled = [...members].sort(() => Math.random() - 0.5)
+    const CommandsEmbed = new EmbedBuilder()
+      .setColor("#910000")
+      .setTitle("Команды")
+      .addFields(
+        {
+          name: "Команда 1",
+          value: command1.map((user) => user.username).join(", "),
+          inline: true
+        },
+        {
+          name: "Команда 2",
+          value: command2.map((user) => user.username).join(", "),
+          inline: true
+        }
+      )
 
-    const command1 = shuffled.slice(0, 5)
-    const command2 = shuffled.slice(5)
-
-    console.log(`Команда 1 (${command1.length}):`, command1)
-    console.log(`Команда 2 (${command2.length}):`, command2)
+    await message.reply({embeds: [CommandsEmbed]})
   }
 })
 

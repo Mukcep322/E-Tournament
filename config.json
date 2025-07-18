@@ -1,0 +1,6 @@
+{
+  "prefix": "?",
+  "commandRegister": "1",
+  "commandSelectCapitns": "2",
+  "commandDraft": "3"
+}

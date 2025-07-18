@@ -57,7 +57,7 @@ client.on("messageCreate", async (message) => {
   )
 
   const reply = await message.reply({
-    content: `0_0 \n @everyone, Регистрация на турнир открыта`,
+    content: `0_0 \n @everyone, Регистрация на турнир открыта! Участников: ${users.length}`,
     components: [buttonRow]
   })
 
@@ -71,32 +71,36 @@ client.on("messageCreate", async (message) => {
     if (interaction.customId === "register") {
       // Пользователь уже зарегистрирован
       if (users.some((user) => user.id === interaction.user.id)) {
-        return interaction.reply(
-          `${interaction.user}, Вы уже были зарегистрированы!`
-        )
+        // return interaction.reply(
+        //   `${interaction.user}, Вы уже были зарегистрированы!`
+        // )
       }
       // Success
       else {
-        await interaction.reply(
-          `${
-            interaction.user
-          }, Вы успешно зарегистрировались на турнир! Участники: ${
-            users.length + 1
-          }`
-        )
+        // await interaction.reply(
+        //   `${
+        //     interaction.user
+        //   }, Вы успешно зарегистрировались на турнир! Участники: ${
+        //     users.length + 1
+        //   }`
+        // )
         users.push(interaction.user)
         console.log(users.map((user) => user.username))
+
+        reply.edit({
+          content: `0_0 \n @everyone, Регистрация на турнир открыта! Участников: ${users.length}`
+        })
       }
     }
     // Отмена регистрации
     if (interaction.customId === "cancel") {
       // Sucess
       if (users.some((user) => user.id === interaction.user.id)) {
-        interaction.reply(
-          `${interaction.user}, Вы отменили регистрацию! Участники: ${
-            users.length - 1
-          }`
-        )
+        // interaction.reply(
+        //   `${interaction.user}, Вы отменили регистрацию! Участники: ${
+        //     users.length - 1
+        //   }`
+        // )
 
         const index = users.findIndex(
           (users) => users.id === interaction.user.id
@@ -106,11 +110,15 @@ client.on("messageCreate", async (message) => {
           users.splice(index, 1)
         }
         console.log(users.map((user) => user.username))
-      } else {
-        return interaction.reply(
-          `${interaction.user}, Вы не были зарегистрированы!`
-        )
+        reply.edit({
+          content: `0_0 \n @everyone, Регистрация на турнир открыта! Участников: ${users.length}`
+        })
       }
+      // else {
+      //   return interaction.reply(
+      //     `${interaction.user}, Вы не были зарегистрированы!`
+      //   )
+      // }
     }
   })
 
@@ -203,7 +211,9 @@ client.on("messageCreate", async (message) => {
         shuffled.forEach((user, index) => {
           index % 2 === 0 ? command1.push(user) : command2.push(user)
         })
-        await interaction.reply("0_0 \n @everyone, Команды распределены!")
+        await interaction.message.edit(
+          "0_0 \n @everyone, Команды распределены!"
+        )
       }
     })
   }
@@ -217,25 +227,25 @@ client.on("messageCreate", async (message) => {
 
 // Show commands
 client.on("messageCreate", async (message) => {
-  if (message.content === commands.prefix + commands.commandDraft) {
-    const CommandsEmbed = new EmbedBuilder()
-      .setColor("#910000")
-      .setTitle("Команды")
-      .addFields(
-        {
-          name: "Команда 1",
-          value: command1.map((user) => user.username).join(", "),
-          inline: true
-        },
-        {
-          name: "Команда 2",
-          value: command2.map((user) => user.username).join(", "),
-          inline: true
-        }
-      )
+  if (message.author.bot) return
+  if (message.content !== commands.prefix + commands.commandDraft) return
+  const CommandsEmbed = new EmbedBuilder()
+    .setColor("#910000")
+    .setTitle("Команды")
+    .addFields(
+      {
+        name: "Команда 1",
+        value: command1.map((user) => user.username).join(", "),
+        inline: true
+      },
+      {
+        name: "Команда 2",
+        value: command2.map((user) => user.username).join(", "),
+        inline: true
+      }
+    )
 
-    await message.reply({embeds: [CommandsEmbed]})
-  }
+  await message.reply({embeds: [CommandsEmbed]})
 })
 
 // Запуск бота
